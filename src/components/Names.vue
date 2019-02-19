@@ -6,7 +6,9 @@
           <v-toolbar-title class="flex grow">
             Add {{ title }} List
           </v-toolbar-title>
-          <v-toolbar-title class="flex shrink subheading">Data starts at row</v-toolbar-title>
+          <v-toolbar-title class="flex shrink subheading">
+            Data starts at row
+          </v-toolbar-title>
           <v-text-field label="Row" solo hide-details mask="####"
             class="mini-input flex shrink ml-2" v-model="rowNo"
           />
@@ -30,6 +32,10 @@
         <v-toolbar-title>
           {{ title }} List
         </v-toolbar-title>
+        <v-spacer />
+        <v-btn color="error" @click="final = []">
+          Clear All
+        </v-btn>
       </v-toolbar>
       <v-card-text>
         <v-list class="py-0">
@@ -62,7 +68,7 @@ export default {
     title: "Name",
     files: [],
     clearAll: true,
-    rowNo: null,
+    rowNo: 2,
     list: [],
 
     final: []
@@ -92,7 +98,8 @@ export default {
       let names = []
       for (let i=this.rowNo-1; i<this.list.length; i++) {
         let p = this.list[i]
-        names.push(new Person(p[0], p[1]))
+        if (p[3] == "Yes") // is present
+          names.push(new Person(p[0], p[1]))
       }
       this.final = names
     }

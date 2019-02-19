@@ -70,7 +70,9 @@ import Swal from 'sweetalert2'
 export default {
   model: {prop: "accepted", event: "input"},
   props: {
-    title: {type: String, default: "File Dropper"}
+    title: {type: String, default: "File Dropper"},
+    allow: {type: [String, Array], default: ".csv"},
+    multiple: {type: Boolean}
   },
   data() {return {
     disabled: false,
@@ -78,10 +80,9 @@ export default {
     rejected: {
       multiple: [],
       filesize: [],
-      filetype: []
-    },
-    multiple: false,
-    allow: ".csv"
+      filetype: [],
+      duplicate: []
+    }
   }},
   computed: {
     allowed() {
@@ -95,6 +96,9 @@ export default {
         return ["*"] // ALL - ignore everything else
       return ret
     }
+  },
+  watch: {
+    accepted: {handler() {}, deep:true}
   },
   methods: {
     test() {
@@ -142,15 +146,21 @@ export default {
       }
 
       // check file type
+      let sp = file.name.split(".")
       if (this.allowed[0] != "*") {
-        let sp = file.name.split(".")
         sp = sp[sp.length - 1]
         if (!sp.startsWith("."))
           sp = "." + sp
-        if (!this.allowed.includes(sp)) {
+        if (!this.allowed.includes(sp.toLowerCase())) {
           this.rejected.filetype.push(file.name)
           ok = false
         }
+      }
+
+      // check duplicate
+      if (this.accepted.map(x => x.name).includes(file.name)) {
+        this.rejected.duplicate.push(file.name)
+        ok = false
       }
 
       if (ok)
@@ -160,6 +170,7 @@ export default {
 
     removeFile(file) {
       this.accepted = this.accepted.filter(x => x.name != file.name)
+      this.$refs.inp.value = null
       this.$emit("input", this.accepted)
     },
     clearAll() {
@@ -167,7 +178,8 @@ export default {
       this.rejected = {
         multiple: [],
         filesize: [],
-        filetype: []
+        filetype: [],
+        duplicate: []
       }
       this.$emit("input", this.accepted)
     },
@@ -200,7 +212,8 @@ export default {
       this.rejected = {
         multiple: [],
         filesize: [],
-        filetype: []
+        filetype: [],
+        duplicate: []
       }
     }
   }

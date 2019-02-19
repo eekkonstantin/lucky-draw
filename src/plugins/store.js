@@ -9,31 +9,24 @@ export default new Vuex.Store({
   state: {
     names: [],
     prizes: [],
-
-    prizeRange: {
-      GTAP4: [1, 10],
-      SMC: [0, 0],
-      Others: [1, 10],
-    }
+    roles: []
   },
   mutations: {
     addNames(state, nl) {
       state.names = nl
+      if (nl.length == 0)
+        state.roles = []
     },
     addPrizes(state, nl) {
       state.prizes = nl
     },
-    setPrizeRange(state, role, numlist) {
-      state.prizeRange[role] = numlist || [0, 0]
+    setRoles(state, roles) {
+      state.roles = roles
     },
     clearAll(state) {
       state.names = []
       state.prizes = []
-      state.prizeRange = {
-        GTAP4: [1, 10],
-        SMC: [0, 0],
-        Others: [1, 10],
-      }
+      state.roles = []
     }
   },
   actions: {

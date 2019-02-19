@@ -76,7 +76,7 @@
           No prize list set!
         </v-alert>
       </v-layout>
-      <component :is="page" v-bind.sync="pageParams" />
+      <component :is="page" v-bind.sync="pageParams" @ready="go('Launch')" />
     </v-content>
 
     <v-footer  fixed class="caption">
@@ -91,6 +91,8 @@
 import HelloWorld from './components/HelloWorld'
 import Home from '@/components/Home'
 import Names from '@/components/Names'
+import Prizes from '@/components/Prizes'
+import Launch from '@/components/Launch'
 import clLogo from "@/assets/cl.png"
 
 export default {
@@ -103,11 +105,16 @@ export default {
     clLogo,
     page: Home,
     pageParams: {},
-    navs: ["Name", "Prize"],
-
-    hasNameList: this.$store.state.names.length > 0,
-    hasPrizeList: false
+    navs: ["Name", "Prize"]
   }},
+  computed: {
+    hasNameList() {
+      return this.$store.state.names.length > 0
+    },
+    hasPrizeList() {
+      return this.$store.state.prizes.length > 0
+    }
+  },
   watch: {
     hasNameList: {handler(have) {
       if (have) {
@@ -118,7 +125,7 @@ export default {
             roles.push(list[i].role)
         }
 
-        roles.forEach(x => this.$store.commit('setPrizeRange', x))
+        this.$store.commit("setRoles", roles)
       }
     }, immediate: true}
   },
@@ -127,6 +134,12 @@ export default {
       switch(page) {
         case "Name":
           this.page = Names
+          break;
+        case "Prize":
+          this.page = Prizes
+          break;
+        case "Launch":
+          this.page = Launch
           break;
         default:
           this.page = Home
@@ -146,6 +159,7 @@ body
   background: url("/lucky-draw-bg.jpg") no-repeat
   background-position: center;
   background-size: cover;
+  background-attachment: fixed
 aside.v-navigation-drawer
   z-index:20
 footer.v-footer
