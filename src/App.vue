@@ -39,7 +39,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-toolbar app fixed clipped-left>
+    <v-toolbar app fixed clipped-left v-if="topnav">
       <v-toolbar-side-icon @click.stop="nav = !nav">
         <v-icon>fa-rocket</v-icon>
       </v-toolbar-side-icon>
@@ -51,7 +51,10 @@
 
         </span>
       </v-toolbar-title>
-      <v-spacer></v-spacer>
+      <v-spacer/>
+      <v-btn flat icon color="primary" @click="topnav = false">
+        <v-icon>fa-chevron-up</v-icon>
+      </v-btn>
       <!-- <v-btn
         flat
         href="https://github.com/vuetifyjs/vuetify/releases/latest"
@@ -64,7 +67,9 @@
 
 
     <v-content app>
-      <v-layout row wrap px-3 pt-3>
+      <v-layout row wrap px-3 pt-3
+        v-if="!hasNameList || !hasPrizeList"
+      >
         <v-alert :value="!hasNameList" type="error"
           @click="go('Name')" class="flex xs12"
         >
@@ -76,7 +81,16 @@
           No prize list set!
         </v-alert>
       </v-layout>
-      <component :is="page" v-bind.sync="pageParams" @ready="go('Launch')" />
+      <component :is="page" v-bind.sync="pageParams"
+        @ready="go('Launch')" @page="go"
+      />
+      <v-btn fab small color="primary"
+        top right absolute v-if="!topnav"
+        style="margin-top:2.5em"
+        @click.native.stop="topnav = true"
+      >
+        <v-icon>fa-ellipsis-h</v-icon>
+      </v-btn>
     </v-content>
 
     <v-footer  fixed class="caption">
@@ -88,21 +102,16 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
 import Home from '@/components/Home'
 import Names from '@/components/Names'
 import Prizes from '@/components/Prizes'
 import Launch from '@/components/Launch'
-import clLogo from "@/assets/cl.png"
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld, Home
-  },
   data () {return {
+    topnav: true,
     nav: false,
-    clLogo,
     page: Home,
     pageParams: {},
     navs: ["Name", "Prize"]
@@ -131,6 +140,7 @@ export default {
   },
   methods: {
     go(page) {
+      this.$store.commit("setPage", page)
       switch(page) {
         case "Name":
           this.page = Names
@@ -146,6 +156,10 @@ export default {
       }
       this.nav = false
     }
+  },
+  mounted() {
+    if (this.$store.state.page)
+      this.go(this.$store.state.page)
   }
 }
 </script>

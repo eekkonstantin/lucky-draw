@@ -9,7 +9,8 @@ export default new Vuex.Store({
   state: {
     names: [],
     prizes: [],
-    roles: []
+    roles: [],
+    page: null,
   },
   mutations: {
     addNames(state, nl) {
@@ -17,11 +18,18 @@ export default new Vuex.Store({
       if (nl.length == 0)
         state.roles = []
     },
+    wonPrize(state, nameID, prizeID) {
+      state.names[nameID].won = prizeID
+      state.prizes[prizeID].wonBy = nameID
+    },
     addPrizes(state, nl) {
       state.prizes = nl
     },
     setRoles(state, roles) {
       state.roles = roles
+    },
+    setPage(state, p) {
+      state.page = p
     },
     clearAll(state) {
       state.names = []

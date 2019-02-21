@@ -1,10 +1,12 @@
 <template>
   <v-layout row wrap px-3 pt-3>
-    <v-alert :value="hasNameList" type="success" class="flex xs12"
+    <v-alert :value="hasNameList" type="success"
+      class="flex xs12" @click="$emit('page', 'Name')"
     >
       Names set!
     </v-alert>
-    <v-alert :value="hasPrizeList" type="success" class="flex xs12"
+    <v-alert :value="hasPrizeList" type="success"
+      class="flex xs12" @click="$emit('page', 'Prize')"
     >
       Prizes set!
     </v-alert>
@@ -54,6 +56,3 @@ export default {
   }
 }
 </script>
-
-<style lang="stylus">
-</style>

@@ -17,10 +17,6 @@
           </v-btn>
         </v-layout>
       </template>
-
-      <template slot="after">
-
-      </template>
     </file-drop>
 
     <v-card class="flex xs12 mt-3">
@@ -29,23 +25,16 @@
           {{ title }} List
         </v-toolbar-title>
         <v-spacer />
-        <v-layout justify-end justify-content-end>
-          <v-checkbox v-for="(role, i2) in roles"
-            :key="`role-all-${i2}`" :label="role" hide-details
-            v-model="all[role]"
-          />
-        </v-layout>
-        <v-spacer />
         <v-btn color="error" @click="clearAll">
           Clear All
         </v-btn>
         <v-btn color="success" @click="save">Save Changes</v-btn>
       </v-toolbar>
-        <v-flex xs12 text-xs-center class="subheading">
-          Drag to rearrange!
+        <v-flex xs12 text-xs-center mt-3 class="subheading">
+          Hold down and drag to rearrange!
         </v-flex>
       <!-- <v-card-text class="layout row wrap"> -->
-        <slick-list axis="xy" v-model="prizes"
+        <slick-list axis="xy" v-model="prizes" helper-class="primary"
           class="v-card__text layout row wrap justify-center"
           v-if="prizes && prizes.length > 0" :press-delay="100"
         >
@@ -55,7 +44,7 @@
           >
             <v-card color="grey darken-4">
               <v-img contain :height="170"
-                :src="prize.image || demoImg"
+                :src="prize.image"
                 aspect-ratio="1.5"
               />
 
@@ -67,7 +56,6 @@
                 <v-text-field v-model="prize.name"
                   label="Prize Name"
                 />
-                {{prize.name}}
               </v-card-text>
 
               <v-card-actions>
@@ -76,7 +64,7 @@
                   <v-checkbox v-for="(role, i2) in roles"
                     :key="`role-${i2}-${i}`" :label="role" hide-details
                     v-model="prizes[i].eligible[role]"
-                    :class="i2 > 0 ? 'ml-5' : ''"
+                    class="flex sm6"
                   />
                 </v-layout>
               </v-card-actions>
@@ -92,7 +80,6 @@
 <script>
 import { SlickList, SlickItem } from 'vue-slicksort'
 import FileDrop from "@/components/FileDropper"
-import demoImg from "@/assets/cl.png"
 export default {
   name: "prizes-page",
   components: {
@@ -104,7 +91,7 @@ export default {
     files: [],
     prizes: [],
     compPrizes: [],
-    demoImg,
+    moving: -1,
     image: null,
     all: {},
     showSnack: false
@@ -128,14 +115,15 @@ export default {
   },
   methods: {
     submit() {
-      let imgCanvas = document.createElement("canvas"),
-          imgContext = imgCanvas.getContext("2d")
+      let imgCanvas = document.createElement("canvas")
+      // eslint-disable-next-line
+      let imgContext = imgCanvas.getContext("2d")
 
       this.prizes = this.files.map(f => ({
         name: f.name,
         image: null,
         eligible: Object.assign({}, this.all),
-        uri: null
+        wonBy: null
       }))
       let reader = new FileReader(), i = 0
 
@@ -173,6 +161,3 @@ export default {
   }
 }
 </script>
-
-<style lang="stylus">
-</style>
