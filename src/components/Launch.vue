@@ -1,5 +1,5 @@
 <template>
-  <v-layout ma-4 column justify-space-between>
+  <v-layout pa-4 column fill-height justify-space-between>
     <v-flex shrink>
       <v-layout row>
         <v-flex xs12 sm4>
@@ -17,51 +17,23 @@
         </v-flex>
       </v-layout>
     </v-flex>
-    <v-flex grow class="text-xs-left" my-2>
-      <v-layout>
-        <v-flex xs2>
-          <v-img :src="rocket" :height="350" contain />
-        </v-flex>
-        <v-flex grow class="display-2">
-          <v-layout column fill-height>
-            <v-flex>
-              <span v-if="stage == 5">SOMEONE'S NAME</span>
-            </v-flex>
-            <v-flex shrink>
-              <v-layout row>
-                <v-flex shrink>
-                  <hold-btn color="primary" fab @down="down" @up="up">
-                    <v-icon>fa-gas-pump</v-icon>
-                  </hold-btn>
-                </v-flex>
-                <v-flex>
-                  <div class="power--box primary" :style="`width:${fuel}%`"/>
-                </v-flex>
-              </v-layout>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-      </v-layout>
+
+    <!-- ROCKET -->
+    <v-flex class="text-xs-left" my-2 align-baseline>
+      <rocket :names="eligibleNames" />
     </v-flex>
 
   </v-layout>
 </template>
 
 <script>
+import Rocket from "@/components/Rocket"
 export default {
   name: "launch-page",
+  components: {Rocket},
   data() {return {
-    inTime: 0, outTime: 0,
-    power: 0,
-    powerGauge: null,
-    spinTime: 5000,
-
     prize: {},
-    prizeID: 9,
-
-    stages: ["idle", "building", "launching", "cruising", "landing", "landed"],
-    stage: 0,
-    stageInt: null
+    prizeID: 9
   }},
   computed: {
     prizeNum() {
@@ -77,18 +49,7 @@ export default {
 
       return ret += " Prize"
     },
-    rocket() {
-      return require("@/assets/rocket/" + this.stages[this.stage] + ".gif")
-    },
-    fuel() {
-      if (this.power < 100)
-        return this.power
-      let hun = this.power / 100,
-          ten = this.power % 100
-      if (hun % 2 == 1) // reverse
-        ten = 100 - ten
-      return ten
-    },
+
     eligibleRoles() {
       let r = []
       for (let role in this.prize.eligible) {
@@ -100,43 +61,8 @@ export default {
     eligibleNames() {
       return this.$store.state.names.filter(x =>
         this.eligibleRoles.includes(x.role)
-        && x.won == -1
+        && !(x.won && x.won > -1)
       )
-    }
-  },
-  watch: {
-    stage(s) {
-      clearTimeout(this.stageInt)
-      switch (s) {
-        case 2:
-          this.stageInt = setTimeout(() => {
-            this.stage = 3
-          }, 1000)
-          break
-        case 3:
-          this.stageInt = setTimeout(() => {
-            this.stage = 4
-          }, this.spinTime)
-          break
-        case 4:
-          this.stageInt = setTimeout(() => {
-            this.stage = 5
-            this.power = 0
-          }, 2000)
-          break
-      }
-    }
-  },
-  methods: {
-    down() {
-      this.stage = 1
-      this.power = 0
-      this.powerGauge = setInterval(() => {this.power++}, 10)
-    },
-    up() {
-      this.stage = 2
-      this.spinTime = this.fuel * 75
-      clearTimeout(this.powerGauge)
     }
   },
   beforeMount() {
