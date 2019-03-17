@@ -25,6 +25,11 @@
         >
           Clear All Data
         </v-btn>
+        <v-btn color="warning" @click="clearWinnings"
+          :disabled="!hasPrizeList && !hasNameList"
+        >
+          Clear Winnings
+        </v-btn>
         <v-btn color="success" @click="$emit('ready')"
           :disabled="!hasPrizeList || !hasNameList"
         >
@@ -32,6 +37,10 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+
+    <v-snackbar color="success" top v-model="showSnack">
+      {{ snackMsg }}
+    </v-snackbar>
   </v-layout>
 </template>
 
@@ -39,7 +48,8 @@
 export default {
   name: "home",
   data() {return {
-
+    showSnack: false,
+    snackMsg: "Winnings cleared!"
   }},
   computed: {
     hasNameList() {
@@ -52,6 +62,10 @@ export default {
   methods: {
     clearAll() {
       this.$store.commit("clearAll")
+    },
+    clearWinnings() {
+      this.$store.commit("clearPrizes")
+      this.showSnack = true
     }
   }
 }

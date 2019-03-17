@@ -99,7 +99,7 @@ export default {
       for (let i=this.rowNo-1; i<this.list.length; i++) {
         let p = this.list[i]
         if (p[3] == "Yes") // is present
-          names.push(new Person(p[0], p[1]))
+          names.push(new Person(i - 1, p[0], p[1]))
       }
       this.final = names
     }

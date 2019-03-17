@@ -18,12 +18,26 @@ export default new Vuex.Store({
       if (nl.length == 0)
         state.roles = []
     },
-    wonPrize(state, nameID, prizeID) {
-      state.names[nameID].won = prizeID
-      state.prizes[prizeID].wonBy = nameID
+    wonPrize(state, win) {
+    let curWinner = state.prizes[win[1]].wonBy
+    if (curWinner)
+      state.names[curWinner].won = null
+    state.names[win[0]].won = win[1]
+    state.prizes[win[1]].wonBy = win[0]
     },
     addPrizes(state, nl) {
       state.prizes = nl
+    },
+    // for dev
+    clearPrizes(state) {
+      state.names.forEach(x => x.won = null)
+      state.prizes.forEach(p => p.wonBy = null)
+    },
+    clearPrize(state, prizeID) {
+      let nID = state.prizes[prizeID].wonBy
+      state.prizes[prizeID].wonBy = null
+      if (nID)
+        state.names[nID].won = null
     },
     setRoles(state, roles) {
       state.roles = roles

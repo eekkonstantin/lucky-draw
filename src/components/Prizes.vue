@@ -54,7 +54,8 @@
 
               <v-card-text class="py-1">
                 <v-text-field v-model="prize.name"
-                  label="Prize Name"
+                  label="Prize Name" persistent-hint
+                  :hint="winner(prize)"
                 />
               </v-card-text>
 
@@ -114,6 +115,11 @@ export default {
     compPrizes: {handler() {}, deep:true}
   },
   methods: {
+    winner(prize) {
+      if (prize.wonBy)
+        return "Won by: " + this.$store.state.names[prize.wonBy].name
+      return "No winners yet"
+    },
     submit() {
       let imgCanvas = document.createElement("canvas")
       // eslint-disable-next-line

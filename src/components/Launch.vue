@@ -1,41 +1,60 @@
 <template>
-  <v-layout pa-4 column fill-height justify-space-between>
-    <v-flex shrink>
-      <v-layout row>
-        <v-flex xs12 sm4>
-          <v-img :src="prize.image" :height="200"
-            :aspect-ratio="2.75" contain />
-        </v-flex>
-        <v-flex xs12 sm8 my-4 class="text-xs-center">
-          <div class="headline primary--text">
-            {{ prizeNum }}
-          </div>
-          <div class="display-2">{{ prize.name }}</div>
-          <div class="subheading mt-2">
+  <rocket :names="eligibleNames" @won="won" ref="rocket">
+    <v-layout row mt-4>
+      <v-flex xs12 sm5>
+        <v-img :src="prize.image" :height="200"
+          :aspect-ratio="2.75" contain
+          position="right center"
+          class="rocket"
+        />
+      </v-flex>
+      <v-flex xs12 sm7 my-4 class="text-xs-center">
+        <div class="headline primary--text">
+          {{ prizeNum }}
+        </div>
+        <div class="display-2">{{ prize.name }}</div>
+        <div class="subheading mt-2">
+          <span v-if="prizeID > -1">
             Open to <b>{{ eligibleRoles.join(", ") }}</b>!
-          </div>
-        </v-flex>
-      </v-layout>
-    </v-flex>
+          </span>
+          <span v-else>
+            This is a test run!
+          </span>
+        </div>
+      </v-flex>
+    </v-layout>
 
-    <!-- ROCKET -->
-    <v-flex class="text-xs-left" my-2 align-baseline>
-      <rocket :names="eligibleNames" />
-    </v-flex>
-
-  </v-layout>
+    <v-btn fab right absolute large
+      v-if="!hideNext"
+      @click.native.stop="goNext"
+    >
+      <v-icon color="primary">fa-chevron-right</v-icon>
+    </v-btn>
+  </rocket>
 </template>
 
 <script>
+import {Bus} from "@/plugins/Bus.js"
 import Rocket from "@/components/Rocket"
+import Swal from 'sweetalert2'
 export default {
   name: "launch-page",
   components: {Rocket},
   data() {return {
-    prize: {},
-    prizeID: 9
+    prizeID: -1,
+    hasWinner: false
   }},
   computed: {
+    hideNext() {
+      return (this.prizeID >= this.$store.state.prizes.length
+              || this.prizeID <= 0)
+              || !this.hasWinner
+    },
+    prize() {
+      if (this.prizeID < 0)
+        return {}
+      return this.$store.state.prizes[this.prizeID]
+    },
     prizeNum() {
       let ret = this.prizeID + 1
       if (ret % 10 == 1 && ret != 11)
@@ -51,6 +70,8 @@ export default {
     },
 
     eligibleRoles() {
+      if (this.prizeID < 0)
+        return this.$store.state.roles
       let r = []
       for (let role in this.prize.eligible) {
         if (this.prize.eligible[role])
@@ -65,8 +86,44 @@ export default {
       )
     }
   },
+  methods: {
+    won(winner) {
+      if (!winner)
+        return
+      if (this.prizeID >= 0) {
+        // this.$refs.rocket.anim.pause()
+        this.$store.commit("wonPrize", [winner.id, this.prizeID])
+        this.hasWinner = true
+      } else
+        Swal.fire({
+          type: "success",
+          title: "Are you ready for the real thing?",
+          showCancelButton: true,
+          cancelButtonText: "One more time!",
+          confirmButtonText: "Yes, let's go!",
+          confirmButtonClass: "primary"
+        }).then(res => {
+          if (res.value)
+            this.prizeID = this.$store.state.prizes.length - 1
+          this.$refs.rocket.resetAnim()
+          this.$refs.rocket.resetSpinner()
+        })
+    },
+    goNext() {
+      this.hasWinner = false
+      this.prizeID--
+      Bus.$emit("reset-rocket")
+      this.$refs.rocket.resetAnim()
+    }
+  },
   beforeMount() {
-    this.prize = Array.from(this.$store.state.prizes).pop()
+    // this.prize = Array.from(this.$store.state.prizes).pop()
+  },
+  mounted() {
+    Bus.$on("reset-prize", () => {
+      if (this.prizeID > -1)
+        this.$store.commit("clearPrize", this.prizeID)
+    })
   }
 }
 </script>
@@ -80,4 +137,7 @@ powerH = 50px
     margin: 6px 8px
     background-image: linear-gradient(to right, #939598, #d71635, red)
 
+.rocket
+  .v-image__image.v-image__image--contain
+    background-position: right center;
 </style>
