@@ -7,15 +7,15 @@
         </v-flex>
         <v-flex>
           <v-layout fill-height align-center>
-            <span v-if="showWinner" class="display-2">
-              <span v-if="winner">
-                {{ winner.name }}
+            <div v-if="showWinner" class="display-2">
+              <div v-if="winner">
+                {{ winner.name }}<br />
                 <span class="display-1 primary--text">
                   Congratulations!
                 </span>
-              </span>
+              </div>
               <span v-else>{{ randomNames[winnerID].name }}</span>
-            </span>
+            </div>
             <span v-else-if="stage == 2">
               Looking for a planet to land on...
             </span>
@@ -74,7 +74,6 @@ export default {
   computed: {
     showWinner() {
       return this.orbiting && this.randomNames && this.randomNames.length > 0
-              && this.randomNames.length > this.winnerID
     },
     rocket() {
       return rockets[this.stages[this.stage]]
