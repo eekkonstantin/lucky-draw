@@ -153,7 +153,7 @@ export default {
         round: 1,
         easing: "linear",
         loop: true,
-        duration: 1000,
+        duration: 400,
         autoplay: false
       })
     },

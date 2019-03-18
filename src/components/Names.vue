@@ -95,11 +95,11 @@ export default {
     },
 
     submit() {
-      let names = []
+      let names = [], id = 0
       for (let i=this.rowNo-1; i<this.list.length; i++) {
         let p = this.list[i]
         if (p[3] == "Yes") // is present
-          names.push(new Person(i - 1, p[0], p[1]))
+          names.push(new Person(id++, p[0], p[1]))
       }
       this.final = names
     }

@@ -113,7 +113,6 @@ export default {
       this.hasWinner = false
       this.prizeID--
       Bus.$emit("reset-rocket")
-      this.$refs.rocket.resetAnim()
     }
   },
   beforeMount() {
