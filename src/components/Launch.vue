@@ -118,12 +118,10 @@ export default {
   },
   beforeMount() {
     // this.prize = Array.from(this.$store.state.prizes).pop()
-    console.log("beforeMount");
     let check = this.$store.state.prizes
     if (!check[check.length - 1].wonBy)
       this.prizeID = -1
     else {
-      console.log("prize");
       for (let i=check.length-1; i>-1; i--) {
         if (!check[i].wonBy) {
           this.prizeID = i
