@@ -1,5 +1,5 @@
 <template>
-  <rocket :names="eligibleNames" @won="won" ref="rocket">
+  <rocket :names="eligibleNames" @won="won" ref="rocket" @down="resetPrize">
     <v-layout row mt-4>
       <v-flex xs12 sm5>
         <v-img :src="prize.image" :height="200"
@@ -113,6 +113,12 @@ export default {
       this.hasWinner = false
       this.prizeID--
       Bus.$emit("reset-rocket")
+    },
+    resetPrize() {
+      if (this.prizeID > -1 && this.hasWinner) {
+        this.$store.commit("clearPrize", this.prizeID)
+        this.hasWinner = false
+      }
     }
   },
   beforeMount() {
@@ -129,11 +135,8 @@ export default {
       }
     }
   },
-  mounted() {
-    Bus.$on("reset-prize", () => {
-      if (this.prizeID > -1)
-        this.$store.commit("clearPrize", this.prizeID)
-    })
+  created() {
+    Bus.$on("reset-prize", this.resetPrize())
   }
 }
 </script>

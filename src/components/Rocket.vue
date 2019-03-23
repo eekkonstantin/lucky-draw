@@ -134,7 +134,7 @@ export default {
     down() {
       this.winnerID = 0
       this.winner = null
-      Bus.$emit("reset-prize")
+      this.$emit("down")
       this.stage = 1
       this.power = 0
       clearInterval(this.powerGauge)
@@ -177,7 +177,7 @@ export default {
   beforeMount() {
     this.resetAll()
   },
-  mounted() {
+  created() {
     Bus.$on("reset-rocket", () => this.resetAll())
   }
 }
