@@ -13,13 +13,8 @@
           {{ prizeNum }}
         </div>
         <div class="display-2">{{ prize.name }}</div>
-        <div class="subheading mt-2">
-          <span v-if="prizeID > -1">
-            Open to <b>{{ eligibleRoles.join(", ") }}</b>!
-          </span>
-          <span v-else>
-            This is a test run!
-          </span>
+        <div class="subheading mt-2" v-if="prizeID <= -1">
+          This is a test run!
         </div>
       </v-flex>
     </v-layout>
@@ -84,6 +79,11 @@ export default {
         this.eligibleRoles.includes(x.role)
         && !(x.won && x.won > -1)
       )
+    }
+  },
+  watch: {
+    prizeID(v) {
+      console.log("Prize ID:", v);
     }
   },
   methods: {

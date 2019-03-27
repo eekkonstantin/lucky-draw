@@ -16,7 +16,15 @@
         <h4 class="display-2">
           Let's win some prizes!
         </h4>
-        <p class="mt-3 mb-0">Please ensure all prizes, names, and prize eligibility have been correctly set.</p>
+        <p class="mt-3 mb-0">
+          <span class="body-2 mb-2">
+            Please ensure all names, prizes, and prize eligibility have been correctly set.
+          </span><br/>
+          Namelists should be in a <code>.csv</code> file (name,role,blank,present - e.g. "<code>Kon,Other,6,Yes</code>").<br/>
+          To set prizes, upload images of the prizes, then rename the prizes if necessary.<br/>
+          Set the prize eligibility (based on Roles from namelist) by toggling the checkboxes.<br/>
+          Prizes can be rearranged: Press and hold on the prize box until a <span class="primary px-1">red border</span> appears, then drag to reorder.
+        </p>
       </v-card-text>
 
       <v-card-actions class="layout justify-center">
